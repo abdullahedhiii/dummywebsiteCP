@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webcam Page</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+    <div class="header">
+        <div class="controls">
+            <button id="openCamera" class="icon-button open">
+                <i class="fa fa-video-camera"></i>
+            </button>
+            <button id="closeCamera" class="icon-button close">
+                <i class="fa fa-power-off"></i>
+            </button>
+        </div>
+    </div>
+    <div class="container">
+        <br>
+        <div class="camera" id="camera">Testing for webcam..</div>
+        <br>
+    </div>
+
+    <script>
+        const openCameraButton = document.getElementById('openCamera');
+        const closeCameraButton = document.getElementById('closeCamera');
+        const cameraDiv = document.getElementById('camera');
+        let videoStream;
+
+        openCameraButton.addEventListener('click', async () => {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('Your browser does not support accessing the webcam.');
+                return;
+            }
+
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.createElement('video');
+                video.srcObject = videoStream;
+                video.autoplay = true;
+                video.style.width = '55%'; // Adjusted to 100% for full container width
+                video.style.height = '55%'; // Adjusted to 100% for full container height
+
+                cameraDiv.innerHTML = 'in camera mode...<br>';
+                cameraDiv.appendChild(video);
+            } catch (error) {
+                console.error('Error accessing the webcam: ', error);
+                alert('Error accessing the webcam: ' + error.message);
+            }
+        });
+
+        closeCameraButton.addEventListener('click', () => {
+            if (videoStream) {
+                const tracks = videoStream.getTracks();
+                tracks.forEach(track => track.stop());
+                videoStream = null;
+                cameraDiv.innerHTML = 'Successfully tested.';
+            }
+        });
+    </script>
+</body>
+</html>
